@@ -1,0 +1,118 @@
+
+create database PoemWeb;
+use PoemWeb;
+SET SQL_SAFE_UPDATES = 0;-- 执行该命令更改mysql数据库模式。
+
+show create table user;
+create table user(
+id varchar(12) primary key,
+password varchar(40),
+name varchar(40) default "匿名用户",
+photo varchar(30) default "default.jpg"
+);
+alter table user change column name name varchar(30) ;
+alter table user change column photo photo varchar(30) default "default.jpg";
+drop table user;
+select * from user;
+INSERT INTO user(id,password) VALUES
+('111111', '123456'),
+('17852426275', '123456','ding123'),
+('22222222222', '123456','dong123');
+
+create table author(
+name varchar(12) primary key,
+dynasty varchar(12),
+introduction varchar(1800)
+);
+select * from author;
+select Poem.name,Poem.author from Poem,Author where Poem.author=Author.name and dynasty="唐";
+select poem.name from Poem,Author where Poem.author=Author.name;
+create table poem(
+name varchar(48) primary key,
+author varchar(12),
+content varchar(1800),
+background varchar(600),
+note varchar(1800),
+appreciation varchar(3600),
+type varchar(3)
+);
+-- alter table poem drop foreign key pk_classes_id;
+-- show create table poem;
+select * from poem;
+INSERT INTO poem VALUES('江雪', '柳宗元',"千山鸟飞绝，万径人踪灭。孤舟蓑笠翁，独钓寒江雪。","哈哈","呵\"11\"呵","嘻嘻","诗");
+INSERT INTO poem VALUES('水调歌头·明月几时有', '苏轼',"明月几时有？把酒问青天。不知天上宫阙，今夕是何年。我欲乘风归去，又恐琼楼玉宇，高处不胜寒。起舞弄清影，何似在人间。
+转朱阁，低绮户，照无眠。不应有恨，何事长向别时圆？人有悲欢离合，月有阴晴圆缺，此事古难全。但愿人长久，千里共婵娟。","哈哈","呵呵","嘻嘻","诗");
+
+create table comment(
+id integer primary key auto_increment,
+userId varchar(12),
+poem varchar(48),
+content varchar(900),
+time datetime default CURRENT_TIMESTAMP,
+replyCount integer default 0, 
+constraint FK_sid foreign key(userId) references users(id)
+);
+select* from comment;
+INSERT INTO comment(userId,poem,content) VALUES('17852426275',"静夜思","perfect！！");
+
+create table store(
+userId varchar(12),
+poem varchar(48),
+primary key(userId,poem)
+);
+select* from store;
+drop table store;
+
+
+create table grade(
+userId varchar(12),
+poem varchar(48),
+grade int,
+primary key(userId,poem)
+);
+select* from grade;
+
+create table secondaryComment(
+id integer primary key auto_increment,
+fatherId integer,
+commentator varchar(20),
+commented varchar(20),
+commentatorPhoto varchar(30),
+content varchar(900),
+time datetime default CURRENT_TIMESTAMP
+);
+drop table secondaryComment;
+select * from secondaryComment;
+-- alter table secondaryComment drop column commentedPhoto;
+INSERT INTO secondaryComment(fatherId,commentator,commented,commentatorPhoto,commentedPhoto,content) VALUES(15,'wang123','ding123',"default.jpg","QQ图片20210224111955.jpg","谁知盘中餐");
+INSERT INTO secondaryComment(fatherId,commentator,commented,commentatorPhoto,commentedPhoto,content) VALUES(15,'ding123','wang123',"QQ图片20210224111955.jpg","default.jpg","粒粒皆辛苦");
+
+
+create table forum(
+id integer primary key auto_increment,
+userId varchar(12),
+theme varchar(100),
+intro varchar(900),
+time datetime default CURRENT_TIMESTAMP,
+replyCount integer default 0, 
+constraint FK_uid foreign key(userId) references user(id)
+);
+select* from forum;
+INSERT INTO forum(userId,theme,intro) VALUES('17852426275',"中秋","值此中秋佳节，广邀诗友，曲水流觞。");
+
+create table reply(
+id integer primary key auto_increment,
+themeId integer,
+userId varchar(12),
+commented varchar(20),
+content varchar(900),
+time datetime default CURRENT_TIMESTAMP,
+constraint FK_usid foreign key(userId) references user(id)
+);
+drop table reply;
+select * from reply;
+INSERT INTO reply(themeId,userId,commented,content) VALUES(1,'111','ding123',"粒粒皆辛苦");
+INSERT INTO reply(themeId,userId,commented,content) VALUES(1,'222','ding123',"独在异乡为异客");
+INSERT INTO reply(themeId,userId,commented,content) VALUES(1,'333','a',"每逢佳节倍思亲");
+INSERT INTO reply(themeId,userId,commented,content) VALUES(1,'111','b',"遥知兄弟登高处");
+INSERT INTO reply(themeId,userId,commented,content) VALUES(1,'222','a',"遍插茱萸少一人");
